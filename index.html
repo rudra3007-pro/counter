@@ -165,10 +165,10 @@ button:active{
 
 <div class="card">
   <div class="symbol">🌙</div>
-  <div class="title">Silent Nights</div>
+  <div class="title">This count shows the devotion towards the bond given by KRISHNA</div>
 
   <div class="count" id="count">0</div>
-  <div class="sub">times you crossed my mind</div>
+  <div class="sub">You remebered your sakhaa..you remebered Krishnaa..</div>
 
   <button onclick="sendLove()">I Miss You</button>
 
@@ -186,12 +186,11 @@ button:active{
 const BASE_URL = "https://script.google.com/macros/s/AKfycbwv-c6n5lTHcFlzdKZq8sf325XOGSo3BStalqKrvDIjBz8_u-xQn4CiL3SxeLKT1S8I/exec"
 const RESET_URL = BASE_URL + "?action=reset"
 function resetCounter(){
-  fetch(RESET_URL)
-    .then(res => res.json())
-    .then(data => {
-      counterEl.textContent = data.value
-    })
+  localCount = 0
+  counterEl.textContent = 0
+  fetch(RESET_URL).catch(()=>{})
 }
+
 
 
 
@@ -220,16 +219,30 @@ heart.innerHTML = "❤️"
   setTimeout(()=>heart.remove(),5000)
 }
 
-function sendLove(){
-  fetch(HIT_URL)
+let localCount = 0
+
+function loadCount(){
+  fetch(VIEW_URL)
     .then(res => res.json())
     .then(data => {
-      counterEl.textContent = data.value
+      localCount = data.value
+      counterEl.textContent = localCount
     })
+}
 
+function sendLove(){
+  // optimistic increment
+  localCount++
+  counterEl.textContent = localCount
+
+  // hearts
   burstHearts(10)
   flowHearts(1200)
+
+  // backend update (NO UI overwrite)
+  fetch(HIT_URL).catch(()=>{})
 }
+
 function burstHearts(count){
   for(let i=0;i<count;i++){
     setTimeout(createHeart, i*60)
