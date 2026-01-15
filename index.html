@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Still Thinking of You 💗</title>
+<title>Still Thinking of You 🌙</title>
 
 <style>
 *{
@@ -18,73 +18,130 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#fde2ff,#e0f2fe);
+  background:radial-gradient(
+    circle at top,
+    #2e1065 0%,
+    #1e0b3c 45%,
+    #0f0220 100%
+  );
   overflow:hidden;
+  color:#e5e7eb;
+}
+
+/* purple glow */
+.glow{
+  position:absolute;
+  width:340px;
+  height:340px;
+  background:#c084fc;
+  filter:blur(180px);
+  opacity:.22;
+  top:14%;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:0;
 }
 
 .card{
-  background:white;
-  padding:40px 30px;
-  border-radius:24px;
+  position:relative;
+  background:rgba(28,10,56,0.82);
+  backdrop-filter:blur(18px);
+  padding:48px 34px;
+  border-radius:28px;
   text-align:center;
   width:90%;
-  max-width:340px;
-  box-shadow:0 20px 40px rgba(0,0,0,.12);
+  max-width:360px;
+  box-shadow:0 35px 70px rgba(0,0,0,.65);
   z-index:2;
+  border:1px solid rgba(192,132,252,.18);
 }
 
-h1{
-  font-size:22px;
-  color:#7b2cbf;
-  margin-bottom:10px;
+.symbol{
+  font-size:26px;
+  margin-bottom:12px;
 }
 
-p{
-  font-size:14px;
-  color:#555;
-  margin-bottom:25px;
+.title{
+  font-size:12px;
+  letter-spacing:.2em;
+  color:#d8b4fe;
+  text-transform:uppercase;
+  margin-bottom:30px;
 }
 
 .count{
-  font-size:42px;
-  font-weight:700;
-  color:#ff4d6d;
-  margin-bottom:20px;
-  animation:pulse 2s infinite;
+  font-size:52px;
+  font-weight:600;
+  color:#f472b6;
+  margin-bottom:6px;
 }
 
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-  100%{transform:scale(1)}
+.sub{
+  font-size:13px;
+  color:#c4b5fd;
+  margin-bottom:36px;
 }
 
 button{
-  padding:14px 28px;
+  padding:14px 36px;
   border:none;
-  border-radius:50px;
-  font-size:16px;
-  background:#ff4d6d;
-  color:white;
+  border-radius:999px;
+  font-size:15px;
+  background:linear-gradient(135deg,#f472b6,#c084fc);
+  color:#1e022b;
   cursor:pointer;
-  box-shadow:0 10px 20px rgba(255,77,109,.4);
+  box-shadow:0 14px 34px rgba(192,132,252,.45);
+  transition:.3s ease;
+}
+
+button:hover{
+  transform:translateY(-2px);
 }
 
 button:active{
-  transform:scale(.95);
+  transform:scale(.96);
 }
 
 .note{
-  margin-top:20px;
+  margin-top:28px;
   font-size:12px;
-  color:#777;
+  color:#a78bfa;
+  line-height:1.6;
+}
+
+/* RESET BUTTON */
+.reset-btn{
+  margin-top:18px;
+  padding:8px 18px;
+  font-size:12px;
+  background:rgba(255,255,255,0.04);
+  color:#c4b5fd;
+  border:1px solid rgba(244,114,182,.35);
+  border-radius:999px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .25s ease;
+}
+
+.reset-btn:hover{
+  background:rgba(244,114,182,.12);
+  color:#f9a8d4;
+  border-color:#f472b6;
+  box-shadow:0 0 0 3px rgba(244,114,182,.2);
+}
+
+.reset-btn:active{
+  transform:scale(.95);
 }
 
 /* HEART ANIMATION */
 .heart{
   position:absolute;
   bottom:-20px;
-  font-size:18px;
+  font-size:26px;
+  filter:drop-shadow(0 0 14px rgba(244,114,182,.9));
   animation:floatUp linear forwards;
   pointer-events:none;
 }
@@ -104,27 +161,48 @@ button:active{
 
 <body>
 
-<div class="card">
-  <h1>💗</h1>
-  <p>Times you were missed</p>
+<div class="glow"></div>
 
-  <div class="count" id="count">…</div>
+<div class="card">
+  <div class="symbol">🌙</div>
+  <div class="title">Silent Nights</div>
+
+  <div class="count" id="count">0</div>
+  <div class="sub">times you crossed my mind</div>
 
   <button onclick="sendLove()">I Miss You</button>
 
+  <button class="reset-btn" onclick="resetCounter()">
+    ↺ Reset
+  </button>
+
   <div class="note">
     No notifications.<br>
-    Just knowing.
+    Just a quiet presence.
   </div>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv-c6n5lTHcFlzdKZq8sf325XOGSo3BStalqKrvDIjBz8_u-xQn4CiL3SxeLKT1S8I/exec"
+const BASE_URL = "https://script.google.com/macros/s/AKfycbwv-c6n5lTHcFlzdKZq8sf325XOGSo3BStalqKrvDIjBz8_u-xQn4CiL3SxeLKT1S8I/exec"
+const RESET_URL = BASE_URL + "?action=reset"
+function resetCounter(){
+  fetch(RESET_URL)
+    .then(res => res.json())
+    .then(data => {
+      counterEl.textContent = data.value
+    })
+}
+
+
+
+
+const VIEW_URL = BASE_URL + "?action=view"
+const HIT_URL  = BASE_URL + "?action=hit"
 
 const counterEl = document.getElementById("count")
 
 function loadCount(){
-  fetch(SCRIPT_URL)
+  fetch(VIEW_URL)
     .then(res => res.json())
     .then(data => {
       counterEl.textContent = data.value
@@ -134,31 +212,42 @@ function loadCount(){
 function createHeart(){
   const heart = document.createElement("div")
   heart.className = "heart"
-  heart.innerHTML = "💗"
+heart.innerHTML = "❤️"
   heart.style.left = Math.random()*100 + "vw"
   heart.style.animationDuration = 3 + Math.random()*2 + "s"
   document.body.appendChild(heart)
 
-  setTimeout(()=>{
-    heart.remove()
-  },5000)
+  setTimeout(()=>heart.remove(),5000)
 }
 
 function sendLove(){
-  fetch(SCRIPT_URL)
+  fetch(HIT_URL)
     .then(res => res.json())
     .then(data => {
       counterEl.textContent = data.value
     })
 
-  for(let i=0;i<6;i++){
-    createHeart()
+  burstHearts(10)
+  flowHearts(1200)
+}
+function burstHearts(count){
+  for(let i=0;i<count;i++){
+    setTimeout(createHeart, i*60)
   }
 }
 
+function flowHearts(duration){
+  const interval = setInterval(createHeart, 250)
+  setTimeout(()=>{
+    clearInterval(interval)
+  }, duration)
+}
+
+
+
+
 loadCount()
 </script>
-
 
 </body>
 </html>
